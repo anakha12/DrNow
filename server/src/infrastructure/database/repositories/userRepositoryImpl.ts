@@ -16,6 +16,12 @@ export class UserRepositoryImpl implements UserRepository {
   return this.toDomain(savedUser);
 }
 
+async updateUserByEmail(email: string, updates: Partial<UserEntity>): Promise<UserEntity> {
+    const updatedUser = await UserModel.findOneAndUpdate({ email }, updates, { new: true });
+    if (!updatedUser) throw new Error("User not found");
+    return this.toDomain(updatedUser);
+  }
+
 
   async updateUser(id: string, updates: Partial<UserEntity>): Promise<UserEntity> {
     const updatedUser = await UserModel.findByIdAndUpdate(id, updates, { new: true });
@@ -38,6 +44,9 @@ export class UserRepositoryImpl implements UserRepository {
       bloodGroup: user.bloodGroup,
       address: user.address,
       isDonner: user.isDonner,
+      otp: user.otp,
+      otpExpiresAt: user.otpExpiresAt,
+      isVerified: user.isVerified,
     };
   }
 }

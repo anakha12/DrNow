@@ -3,8 +3,13 @@ import axios from "axios";
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api/users";
 
 // Send OTP
-export const sendOtp = async (email: string) => {
-  const response = await axios.post(`${API}/send-otp`, { email });
+export const sendOtp = async (data: {
+  name: string;
+  email: string;
+  password: string;
+  isDonner: string;
+}) => {
+  const response = await axios.post(`${API}/send-otp`, data);
   return response.data;
 };
 

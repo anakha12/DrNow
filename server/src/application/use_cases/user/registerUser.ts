@@ -1,24 +1,22 @@
-
 import { UserRepository } from "../../../domain/repositories/userRepository";
 import { UserEntity } from "../../../domain/entities/userEntity";
 import bcrypt from "bcrypt";
 
-export const registerUser = async (
-  userData: UserEntity,
-  userRepository: UserRepository
-): Promise<UserEntity> => {
-  const { email, password } = userData;
+export class RegisterUser {
+  constructor(private userRepository: UserRepository) {}
 
-  const existing = await userRepository.findByEmail(email);
-  if (existing) throw new Error("User already exists");
+  async execute(userData: UserEntity): Promise<UserEntity> {
+    const { email, password } = userData;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser: UserEntity = {
-    ...userData,
-    password: hashedPassword,
-    isBlocked: false,
-    isDonner: false,
-  };
+    const existing = await this.userRepository.findByEmail(email);
+    if (!existing) throw new Error("User not found");
 
-  return await userRepository.createUser(newUser);
-};
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const updatedUser = await this.userRepository.updateUserByEmail(email, {
+      password: hashedPassword
+    });
+
+    return updatedUser;
+  }
+}

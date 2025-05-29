@@ -13,5 +13,8 @@ export interface UserEntity {
   bloodGroup: string;
   address: string;
   isBlocked: boolean;
+  isVerified?: boolean;
+  otp?: string; 
+  otpExpiresAt?: Date;
   isDonner: boolean;
 }

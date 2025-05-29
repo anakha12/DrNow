@@ -6,5 +6,5 @@ export interface UserRepository {
   findByEmail(email: string): Promise<UserEntity | null>;
   createUser(user: UserEntity): Promise<UserEntity>;
   updateUser(id: string, user: Partial<UserEntity>): Promise<UserEntity>;
-  // Add more methods as needed
+  updateUserByEmail(email: string, user: Partial<UserEntity>): Promise<UserEntity>; // <-- Add this line
 }

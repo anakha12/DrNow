@@ -1,32 +1,48 @@
 import { Request, Response } from "express";
-import { registerUser } from "../../application/use_cases/user/registerUser";
-import { sendUserOtp } from "../../application/use_cases/user/sendUserOtp";
+import { RegisterUser } from "../../application/use_cases/user/registerUser";
+import { SendUserOtp } from "../../application/use_cases/user/sendUserOtp";
 import { UserRepositoryImpl } from "../../infrastructure/database/repositories/userRepositoryImpl";
 import { sendMail } from "../../services/mailService";
+import { UserRegisterDTO } from "../../application/dto/userRegister.dto";
+import { VerifyUserOtp } from "../../application/use_cases/user/verifyUserOtp";
 
-const userRepository = new UserRepositoryImpl();
+export class UserController {
+  private userRepository: UserRepositoryImpl;
+  private registerUser: RegisterUser;
+  private sendUserOtp: SendUserOtp;
+   private verifyUserOtp: VerifyUserOtp;
 
-export const userRegister = async (req: Request, res: Response) => {
-  console.log("Register request body:", req.body)
-  try {
-    const user = await registerUser(req.body, userRepository);
-    res.status(201).json({ message: "User registered", user });
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  constructor() {
+    this.userRepository = new UserRepositoryImpl();
+    this.registerUser = new RegisterUser(this.userRepository);
+    this.sendUserOtp = new SendUserOtp(this.userRepository);
+    this.verifyUserOtp = new VerifyUserOtp(this.userRepository);
   }
-};
 
+  async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password, otp } = req.body;
+      console.log("Register request body:", req.body);
+      await this.verifyUserOtp.execute(email, otp);
+      const userData = { email, password } as any; 
+      await this.registerUser.execute(userData);
 
-export const userSendOtp = async (req: Request, res: Response) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+      res.status(201).json({ message: "User registered successfully" });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
     }
-    const otp = await sendUserOtp(email);
-    await sendMail(email, "Your OTP Code", `Your OTP is: ${otp}`);
-    res.status(200).json({ message: `OTP sent to ${email}`, otp });
+  }
+
+  async sendOtp(req: Request, res: Response): Promise<void> {
+  try {
+    const dto = new UserRegisterDTO(req.body);
+    await this.sendUserOtp.execute(dto); // Pass DTO directly
+    res.status(200).json({ message: `OTP sent to ${dto.email}` });
   } catch (err: any) {
+    console.error("Send OTP error:", err);
     res.status(500).json({ error: "Failed to send OTP" });
   }
-};
+}
+
+
+}

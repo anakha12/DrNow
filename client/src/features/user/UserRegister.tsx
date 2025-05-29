@@ -14,19 +14,23 @@ const UserRegister = () => {
 
 
   const handleSendOtp = async () => {
-    try {
-      console.log("Sending OTP to:", email);
-      const res = await sendOtp(email);
-      console.log("OTP sent successfully:", res);
-      setMessage(res.message);
-      setStep("otp");
-
-      setTimer(60);
-      setIsCountingDown(true);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || "Failed to send OTP");
-    }
-  };
+  try {
+    console.log("Sending OTP to:", email);
+    const res = await sendOtp({
+      name,
+      email,
+      password,
+      isDonner: isDonner ? "true" : "false",
+    });
+    console.log("OTP sent successfully:", res);
+    setMessage(res.message);
+    setStep("otp");
+    setTimer(60);
+    setIsCountingDown(true);
+  } catch (err: any) {
+    setMessage(err.response?.data?.message || "Failed to send OTP");
+  }
+};
 
   const handleRegister = async () => {
     try {
