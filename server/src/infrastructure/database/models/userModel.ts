@@ -13,6 +13,7 @@ export interface IUSER extends Document{
     isVerified?: boolean;
     bloodGroup: string;
     address: string;
+    role: string; 
     otp?: string;
     otpExpiresAt?: Date;
     // uid?: string;
@@ -36,6 +37,7 @@ const UserSchema: Schema =new Schema<IUSER>(
         address: { type: String, required: false },
         otp: { type: String },
         otpExpiresAt: { type: Date },
+        role: { type: String, default: "user" }, // Default role is 'user'
         // uid: { type: String },
         // profileCompletion: { type: String, default: "false" },
         isDonner: { type: Boolean, default: false },

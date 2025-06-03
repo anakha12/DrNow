@@ -45,6 +45,7 @@ async updateUserByEmail(email: string, updates: Partial<UserEntity>): Promise<Us
       address: user.address,
       isDonner: user.isDonner,
       otp: user.otp,
+      role: user.role,
       otpExpiresAt: user.otpExpiresAt,
       isVerified: user.isVerified,
     };

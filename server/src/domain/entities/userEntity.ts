@@ -14,6 +14,7 @@ export interface UserEntity {
   address: string;
   isBlocked: boolean;
   isVerified?: boolean;
+  role: string;
   otp?: string; 
   otpExpiresAt?: Date;
   isDonner: boolean;
